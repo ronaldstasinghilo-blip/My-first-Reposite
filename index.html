@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keyword System V3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- STUDENT -->
+<div class="card" id="studentView">
+  <p class="title">Keyword of the Week</p>
+  <div class="sub">Student Entry Form</div>
+  <div id="statusDot" class="status-dot">Checking...</div>
+
+  <input type="text" id="fullName" placeholder="Your complete name *">
+  <div class="row">
+    <select id="yearLevel"><option value="">Year *</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option></select>
+    <select id="program"><option value="">Program *</option></select>
+  </div>
+  <div class="row">
+    <select id="section"><option value="">Section *</option><option>A</option><option>B</option><option>C</option><option>D</option></select>
+    <input type="text" id="subject" placeholder="Course Code / Subject *">
+  </div>
+  <input type="text" id="keyword" placeholder="Input Keyword here... *">
+
+  <button class="btn" id="submitBtn" onclick="submitEntry()">Submit Entry</button>
+  <p id="result"></p>
+  <div class="counter" id="counter"></div>
+
+  <button class="b b-dark" style="width:100%;margin-top:10px" onclick="toggleAnn()">📢 View Announcement</button>
+  <div class="ann-box" id="annBox"></div>
+  <button class="link" onclick="openAdminLogin()">Continue to Admin Dashboard →</button>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="adminLogin">
+  <div class="card" style="max-width:360px">
+    <p class="title" style="font-size:18px">Admin Login</p>
+    <div class="pass-wrap">
+      <input type="password" id="adminPassIn" placeholder="Admin password">
+      <button class="eye" onclick="toggleEye('adminPassIn', this)">👁️</button>
+    </div>
+    <button class="btn" onclick="checkAdmin()">Unlock</button>
+    <button class="link" onclick="closeAdminLogin()">Cancel</button>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div id="adminView">
+<div class="wrap">
+  <div class="top">
+    <h2 style="color:#ff5e00;margin:0;font-size:20px">DASHBOARD KEYWORD</h2>
+    <div style="display:flex;gap:6px">
+      <button class="b b-dark" onclick="toggleTheme()" id="themeBtn">🌙 Light Mode</button>
+      <button class="b b-dark" onclick="closeAdmin()">← Exit</button>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat"><b id="sTotal">0</b><span>Total Entries</span></div>
+    <div class="stat"><b id="sKeyword" style="font-size:14px;color:#ff5e00">---</b><span>Current Keyword</span></div>
+    <div class="stat"><b id="sOpen">OPEN</b><span>Submission</span></div>
+    <div class="stat"><b id="sDue" style="font-size:11px">No deadline</b><span>Deadline</span></div>
+  </div>
+
+  <div class="panel">
+    <h3>🔍 Filter & Sort Table</h3>
+    <div class="filters">
+      <select id="fProgram" onchange="renderTable()"><option value="">All Program</option></select>
+      <select id="fYear" onchange="renderTable()"><option value="">All Year</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option></select>
+      <select id="fSection" onchange="renderTable()"><option value="">All Section</option><option>A</option><option>B</option><option>C</option><option>D</option></select>
+      <input type="text" id="fSubject" placeholder="Filter Subject..." oninput="renderTable()">
+      <input type="text" id="fSearch" placeholder="Search name..." oninput="renderTable()">
+    </div>
+    <div style="max-height:380px;overflow:auto">
+      <table>
+        <thead><tr><th onclick="sortBy('name')"># Name ↕</th><th onclick="sortBy('program')">Program ↕</th><th onclick="sortBy('year')">Year ↕</th><th onclick="sortBy('section')">Sec ↕</th><th>Subject</th><th onclick="sortBy('time')">Date/Time ↕</th><th>Action</th></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+      <button class="b b-dark" onclick="exportCSV()">Export CSV</button>
+      <button class="b b-red" onclick="clearEntries()">Clear All</button>
+    </div>
+  </div>
+
+  <div class="row grid2">
+    <div class="panel">
+      <h3>⚙️ Submission Control</h3>
+      <input type="datetime-local" id="deadlineInput">
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="b b-orange" style="flex:1" onclick="saveDeadline()">Save Deadline</button>
+        <button class="b b-dark" onclick="clearDeadline()">No Deadline</button>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:6px">
+        <button class="b b-dark" style="flex:1" onclick="setOpen(true)">🔓 Open</button>
+        <button class="b b-red" style="flex:1" onclick="setOpen(false)">🔒 Close</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>🔑 Keyword & Password</h3>
+      <input type="text" id="newKey" placeholder="New keyword">
+      <button class="b b-orange" style="width:100%;margin-top:6px" onclick="saveKey()">Save Keyword & Reset</button>
+      <div class="sep"></div>
+      <label class="mini-label">CURRENT PASSWORD</label>
+      <div class="pass-wrap">
+        <input type="password" id="oldP" placeholder="Current admin password">
+        <button class="eye" onclick="toggleEye('oldP', this)">👁️</button>
+      </div>
+      <label class="mini-label">NEW PASSWORD</label>
+      <div class="pass-wrap">
+        <input type="password" id="newP" placeholder="New admin password">
+        <button class="eye" onclick="toggleEye('newP', this)">👁️</button>
+      </div>
+      <button class="b b-dark" style="width:100%;margin-top:8px" onclick="changePass()">Change Password</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>📚 Manage Programs</h3>
+    <div style="display:flex;gap:6px"><input type="text" id="newProg" placeholder="Add Program..." style="flex:1;margin-top:0"><button class="b b-orange" onclick="addProgram()">Add</button></div>
+    <div id="progList" class="prog-list"></div>
+  </div>
+
+  <div class="panel">
+    <h3>📢 Announcement</h3>
+    <textarea id="annInput" rows="3"></textarea>
+    <div style="display:flex;gap:6px;margin-top:8px"><button class="b b-orange" onclick="saveAnn()">Publish</button><button class="b b-dark" onclick="clearAnn()">Clear</button></div>
+  </div>
+
+</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
